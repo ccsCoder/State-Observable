@@ -1,0 +1,18 @@
+{
+  "name": "statelib",
+  "version": "1.0.0",
+  "description": "a State library",
+  "main": "index.js",
+  "scripts": {
+    "test": "node dist/index_test.js"
+  },
+  "author": "Neo",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "gulp": "^4.0.0",
+    "gulp-babel": "^7.0.0",
+    "gulp-watch": "^5.0.0"
+  }
+}
