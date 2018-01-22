@@ -25,7 +25,7 @@ JsonUtils.create(testObj, "masters.passout","2009");
 let old = JsonUtils.prop(testObj, "masters.passout","2008");
 
 console.log(testObj);
-console.log(old);
+console.log(JsonUtils.propGet(testObj, "masters.passout"));
 
 
 // let obs = State.create(testObj);

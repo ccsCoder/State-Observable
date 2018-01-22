@@ -1,9 +1,13 @@
 export class JsonUtils {
 
-    static find (jsonObject, keyArray) {
-        console.log(keyArray);
+    static find (jsonObject, keyArray, parent) {
         
         let pointer = jsonObject;
+        if(parent) {
+            keyArray = keyArray.slice(0, keyArray.length-1);
+            console.log(keyArray);
+            
+        }
         keyArray.forEach((key_val) => {
             if(pointer[key_val]) {
                 pointer = pointer[key_val];
@@ -24,17 +28,21 @@ export class JsonUtils {
     }
 
     static createOnRoot (jsonObject, value) {
-        console.log("some");
         Object.assign(jsonObject, value);
     }
 
     static prop (jsonObject, prop, value) {
-        let loc = JsonUtils.find(jsonObject, prop.split('.')); 
-        // console.log(loc);
-        let prev = loc;
-        loc = value;
+        let prop_path = prop.split('.');
+        let loc = JsonUtils.find(jsonObject, prop_path, true); 
+        let prop_name = prop_path[prop_path.length-1];
+        let prev = loc[prop_name];
+        loc[prop_name] = value;
         return prev;
 
+    }
+
+    static propGet(jsonObject, prop) {
+        return JsonUtils.find(jsonObject, prop.split('.'));
     }
 
 }
