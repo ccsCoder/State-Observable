@@ -4,7 +4,8 @@
   "description": "a State library",
   "main": "index.js",
   "scripts": {
-    "test": "node dist/index_test.js"
+    "test": "node dist/index_test.js",
+    "debug": "node inspect dist/index_test.js"
   },
   "author": "Neo",
   "license": "GPL-3.0",

@@ -1,7 +1,10 @@
+import { JsonUtils } from "./JsonUtils";
+
 export class State {
     
     constructor(dataObject) {
         this.obj = dataObject;
+        this.handlers = {};
     }
 
     static create (obj) {
@@ -16,56 +19,67 @@ export class State {
         return this.obj;
     }
 
-    create (key, value ) {
-        let prev = undefined;
-        let path = "";
-
-        if (key && value) {
-            prev = this.obj[key] ;
-            if(Array.isArray(this.obj[key])) {
-                this.obj[key].push(value);
-            } else {
-                this.obj[key] = value;
-            }
-            path = key;
-
+    create (key, value) {
+        if(key && value) {
+            JsonUtils.create(this.obj, key, value);
         } else if(!value) {
-            //in this case, we have the object in Key
-            Object.assign(this.obj, key);
+            JsonUtils.createOnRoot(this.obj, key);
         } else {
-            console.error("You must provide at-least one argument");
+            console.log('Invalid Argument.');
         }
-        //publish event
-        State.publish("MUTATION", {
-            type: "create",
-            path : path,
-            old_val : prev,
-            new_val : value || key
-
-        });
-
-        return this;
     }
 
     prop(key, value) {
-        let prev = undefined;
         if(key && value) {
-            prev = this.obj[key];
-            this.obj[key] = value;
-            State.publish("MUTATION", {
+            let snapshot = JsonUtils.prop(this.obj, key, value);
+           
+            this.publish({
                 type: "update",
                 path: key,
-                old_val: prev,
-                new_val: value
-            });
+                old_val: snapshot,
+                new_val: this.obj
+            })
             return this;
-        } else if(!value) {
-            console.log(key);
-            return this.obj[key];
+
+        } else if ( !val) {
+            return JsonUtils.propGet(this.obj, key);
+        } else {
+            console.log('Invalid Arguments');
         }
+        
     }
 
-    static publish(data) {
-        // console.log('published '+data.type);
+    on (key, fn) {
+        if(!this.handlers[key]) {
+            this.handlers[key] = [];
+        }
+        this.handlers[key].push(fn);
+
+        return function () {
+            this.handlers[key] = this.handlers[key].filter((item) => {
+                ''+item !== ''+fn;
+            });
+        }.bind(this);
+    }
+
+    publish(evtData) {
+        // console.log(evtData); 
+        
+        let eventPath = evtData.path;    //range.type.absolute
+        let obj = this.obj;
+        do {
+
+            if (this.handlers [eventPath] && this.handlers[eventPath].length > 0) {
+                this.handlers[eventPath].forEach( (handlerFn)=> {
+                    handlerFn(
+                        JsonUtils.find(evtData.old_val, eventPath.split('.')), 
+                        JsonUtils.find(obj, eventPath.split('.'))
+                    );
+                });
+            }
+            
+            eventPath = eventPath.substring(0, eventPath.lastIndexOf('.'));
+            
+        } while(eventPath!="");
     }
 }

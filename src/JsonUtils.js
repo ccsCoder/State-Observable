@@ -1,12 +1,10 @@
 export class JsonUtils {
 
-    static find (jsonObject, keyArray, parent) {
+    static find (obj, keyArray, parent) {
         
-        let pointer = jsonObject;
+        let pointer = obj;
         if(parent) {
             keyArray = keyArray.slice(0, keyArray.length-1);
-            console.log(keyArray);
-            
         }
         keyArray.forEach((key_val) => {
             if(pointer[key_val]) {
@@ -18,31 +16,41 @@ export class JsonUtils {
         return pointer;
     }
 
-    static create (jsonObject, key, value) {
+    static create (obj, key, value) {
         let keys = key.split('.');
         let newValueKey = keys.slice(keys.length-1);
         let parentRef = keys.slice(0, keys.length-1);
-        let loc = JsonUtils.find(jsonObject, parentRef);
+        let loc = JsonUtils.find(obj, parentRef);
 
         loc[newValueKey] = value; 
     }
 
-    static createOnRoot (jsonObject, value) {
-        Object.assign(jsonObject, value);
+    static createOnRoot (obj, value) {
+        Object.assign(obj, value);
     }
 
-    static prop (jsonObject, prop, value) {
+    static prop (obj, prop, value) {
+        let snapshot = JsonUtils.clone(obj);
         let prop_path = prop.split('.');
-        let loc = JsonUtils.find(jsonObject, prop_path, true); 
+        let loc = JsonUtils.find(obj, prop_path, true); 
         let prop_name = prop_path[prop_path.length-1];
-        let prev = loc[prop_name];
         loc[prop_name] = value;
-        return prev;
+        // JsonUtils.plog(snapshot);
+        return snapshot;
 
     }
 
-    static propGet(jsonObject, prop) {
-        return JsonUtils.find(jsonObject, prop.split('.'));
+    static clone (obj)  {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
+    static propGet(obj, prop) {
+        return JsonUtils.find(obj, prop.split('.'));
+    }
+
+    static plog(obj) {
+        console.log(JSON.stringify(obj, null, 2));
+        
     }
 
 }

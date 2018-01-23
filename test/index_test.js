@@ -15,27 +15,39 @@ var testObj = {
     }
 };
 
+var testobj2 = {
+  range: {
+    start: 1,
+    end: 5,
+    type: {
+      absolute: true
+    }
+  },
+  visible: true,
+  focus: null
+};
 
+// JsonUtils.create(testObj, "masters.passout","2009");
 
-//let loc = JsonUtils.find(testObj, "bachelors.name");
-//console.log(loc);
+// let old = JsonUtils.prop(testObj, "masters.passout","2008");
 
-JsonUtils.create(testObj, "masters.passout","2009");
 // console.log(testObj);
-let old = JsonUtils.prop(testObj, "masters.passout","2008");
+// console.log(JsonUtils.propGet(testObj, "masters.passout"));
 
-console.log(testObj);
-console.log(JsonUtils.propGet(testObj, "masters.passout"));
+let ref = State.create(testobj2);
+
+let printer = (old, newval) => {
+    JsonUtils.plog(old);
+    JsonUtils.plog(newval);
+}
+
+ref.on('range.type.absolute', printer);
+
+ref.on('range.type', printer);
+
+ref.on('range',printer);
+
+ref.prop('range.type.absolute','false'); 
 
 
-// let obs = State.create(testObj);
-// // console.dir(obs);
-// obs.create("degrees",{"highschool":{
-//     name: "10th",
-//     "percentage":"85"
-// }});
 
-// console.log(obs.prop('masters.cgpa'));
-//obs.prop('degrees.bachelors.cgpa','9.2');
-
-//console.log(obs.getState());
