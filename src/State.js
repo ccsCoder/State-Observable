@@ -103,4 +103,7 @@ export class State {
             
         } while(eventPath!="");
     }
+    toString() {
+        return "State";
+    }
 }
