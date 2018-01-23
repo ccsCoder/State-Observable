@@ -30,13 +30,10 @@ export class JsonUtils {
     }
 
     static prop (obj, prop, value) {
-        let snapshot = JsonUtils.clone(obj);
         let prop_path = prop.split('.');
         let loc = JsonUtils.find(obj, prop_path, true); 
         let prop_name = prop_path[prop_path.length-1];
         loc[prop_name] = value;
-        // JsonUtils.plog(snapshot);
-        return snapshot;
 
     }
 

@@ -41,13 +41,20 @@ let printer = (old, newval) => {
     JsonUtils.plog(newval);
 }
 
+
 ref.on('range.type.absolute', printer);
 
 ref.on('range.type', printer);
 
 ref.on('range',printer);
 
-ref.prop('range.type.absolute','false'); 
+ref.prop('range.type.absolute', false);
+
+// ref.
+// lock()
+// .prop('range.type.absolute','false')
+// .prop('range.end',10)
+// .unlock();
 
 
 

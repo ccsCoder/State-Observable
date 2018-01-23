@@ -8,9 +8,6 @@ export class State {
     }
 
     static create (obj) {
-        if (this._stateObj) {
-          return this._stateObj;
-        }
         this._stateObj = new State(obj);
         return this._stateObj;
     }
@@ -30,18 +27,24 @@ export class State {
     }
 
     prop(key, value) {
-        if(key && value) {
-            let snapshot = JsonUtils.prop(this.obj, key, value);
+        if((key && value) || (key && value===false)) {
+            let snapshot = JsonUtils.clone(this.obj);
+            
+            JsonUtils.prop(this.obj, key, value);
            
-            this.publish({
-                type: "update",
-                path: key,
-                old_val: snapshot,
-                new_val: this.obj
-            })
+            if(this.locked) {
+                this.eventsCache["update"] = { type: "update", path: key, old_val: this.temp_obj, new_val: this.obj };
+            } else {
+                this.publish({
+                    type: "update",
+                    path: key,
+                    old_val: snapshot,
+                    new_val: this.obj
+                })
+            }
             return this;
 
-        } else if ( !val) {
+        } else if (!value) {
             return JsonUtils.propGet(this.obj, key);
         } else {
             console.log('Invalid Arguments');
@@ -62,8 +65,26 @@ export class State {
         }.bind(this);
     }
 
+    lock () {
+        this.eventsCache = {};
+        this.temp_obj = JsonUtils.clone(this.obj);
+        this.locked = true;
+        return this;
+
+    }
+
+    unlock () {
+        this.locked = false;
+        Object.keys(this.eventsCache).forEach((key) => {
+            this.publish(this.eventsCache[key]);
+        });
+        this.eventsCache = {};
+        delete this.temp_obj; 
+        return this;
+    }
+
     publish(evtData) {
-        // console.log(evtData); 
+        console.log('Inside publish');
         
         let eventPath = evtData.path;    //range.type.absolute
         let obj = this.obj;
